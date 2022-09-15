@@ -1,23 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+
+import { useState } from 'react';
+import "./App.css";
 
 function App() {
+  const [Url, setUrl] = useState("")
+
+  const runOnClick = () =>{
+    /* eslint-disable no-undef */
+    chrome.tabs.query({active:true,currentWindow:true},(tabs)=>{
+      const activeTabId = tabs[0].id;
+      chrome.scripting.executeScript({
+        target : {tabId : activeTabId},
+        function : () => { 
+          let aElements = document.getElementsByTagName("a");
+          for(let i = 0;i < aElements.length; i++){
+          window.open(aElements[i].href)  
+          }
+      }
+      })
+    })
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="header">
+        <h3>I am Extention</h3>
+        <input type="text" onChange={(e)=>{
+setUrl(e.target.value)
+        }} label="input url" placeholder="input url to find a tags" />
+        <button onClick={()=>{
+          console.log("Url",Url);
+          runOnClick()
+        }}>
+          Hit Me!
+        </button>
+      </div>
     </div>
   );
 }
